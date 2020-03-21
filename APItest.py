@@ -10,12 +10,15 @@ from googletrans import Translator
 
 import requests, json
 
-
+paises = []
 ##REAL-TIME
 
-response = requests.get("https://coronavirus-19-api.herokuapp.com/countries/spain") 
+response = requests.get("https://coronavirus-19-api.herokuapp.com/countries/") 
+x = response.json()
+i = 0
+for todo in x:
+	paises.append((todo["country"]).lower())
 
-print(response.json())
-
-print(response.json()['deaths'])
+for all in paises:
+	print (all)	
 
