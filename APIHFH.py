@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jan 16 18:48:49 2020
+Created on 21/3/2020
 
 @author: mike
 """
@@ -31,7 +31,19 @@ access_token_secret="5XYEQz9DzbpRIb9TBg7PHxbK7B9q52yZx4FoBRYBTgz9L"
 ##REAL-TIME
 paises = []
 
+predCatDema = "" 
+predCatPassat = ""
+predCatAltre = ""
 
+
+predEspDema= ""
+predEspPassat = ""
+predEspAltre = ""
+
+
+predUEDema = ""
+predUEPassat = ""
+predUEAltre = ""
 
 def guardapaisosdisponibles():	
 		response = requests.get("https://coronavirus-19-api.herokuapp.com/countries/") 
@@ -40,39 +52,14 @@ def guardapaisosdisponibles():
 		for todo in x:
 			paises.append((todo["country"]).lower())
 
-
-	
-
-
-class StdOutListener(StreamListener):
-  
-    def on_status(self, status):
-       print (status.author.screen_name, status.created_at, status.text, status.id)
-       author = status.author.screen_name
-       text = status.text
-       statID = status.id
-       if "info" in text:
-       	end = len(text)
-       	print(end)
-       	text= text[15:end]
-       	print(text)
-       	respondrealtime(statID, author, text)
-       elif "prediction" in text:	
-       	prediction(statID, author, text)
-       return True
-
-    def on_error(self, status):
-        print(status)
-
-
-
-
 def checkifpaisexiste(pais):
 	if pais.lower() not in paises:
 		return False
 	else:
 		return True
 
+
+dades = []
 
 def busquedainfoprediction():  
 	url = 'https://biocomsc.upc.edu/en/covid-19'
@@ -81,7 +68,7 @@ def busquedainfoprediction():
 
 	soup = BeautifulSoup(content,'lxml')
 	
-	dades = []
+	
 
 	for table in soup.find_all("table",{"class":"plain"}):
 		for finded in table.find_all("td"):
@@ -115,32 +102,27 @@ def busquedainfoprediction():
 
 def prediction(tweetid, author, text):
 	text = text.lower()
-
+	tipo = ""
 	if ("catalunya" in text or "catalonia" in text or "cataluña" in text):
-		avui = predCatDema 
-		dema = predCatPassat 
-		altre = predCatAltre 
+		avui = dades[2]
+		dema = dades[4]
+		altre = dades[6]
+		tipo = "Catalonia"
+		 
 	elif  ("españa" in text or "espanya" in text or "spain" in text):
-		avui = predEspDema 
-		dema = predEspPassat 
-		altre = predEspAltre 
+		avui = dades[9]
+		dema = dades[11]
+		altre = dades[13]
+		tipo = "Spain"
 
 	elif ("ue" in text or "europea" in text or "europa" in text or "europe"):
 		avui = dades[17]
 		dema = dades[19]
 		altre = dades[21]
+		tipo = "Europe"
 
 	filename = "1.png"
-	x = datetime.datetime.now()
-	api.update_with_media(filename, status = "Hey, @" +author +". The predictions for the next three days, according to the information gived by BIOCOM-SC, are:  "+ avui + ", " + dema + ", " + altre  , in_reply_to_status_id = tweetid)
-
-
-
-
-
-
-
-
+	api.update_with_media(filename, status = "Hey, @" +author +". The projections for the next three days in " + tipo +", according to the information given by BIOCOM-SC, are:  "+ avui + ", " + dema + " and " + altre + " cases!😰. #StayHomeStaySafe" , in_reply_to_status_id = tweetid)
 
 def respondrealtime(tweetid, author, text):
 	pais = text
@@ -149,20 +131,40 @@ def respondrealtime(tweetid, author, text):
 		web_api = "https://coronavirus-19-api.herokuapp.com/countries/" + pais
 		response = requests.get(web_api)
 		x = response.json() 
-		if response.json()['cod'] != "404": 
-			print(response.json())
-			actualdeaths = response.json()['deaths']
-			cases = response.json()['cases']
-			todaycases = response.json()['todayCases']
-			recovered = response.json()['recovered']
-			active = response.json()['active']
-			
-			api.update_status("Hi, @" +author + ".\n👑🦠 cases: " + str(cases) +  "\n 💀 deaths: " + str(actualdeaths) + "\n 🏥 active:  " + str(active) + "\n💪 recovered : " + str(recovered) , in_reply_to_status_id = tweetid) 
+		print(response.json())
+		actualdeaths = response.json()['deaths']
+		cases = response.json()['cases']
+		todaycases = response.json()['todayCases']
+		recovered = response.json()['recovered']
+		active = response.json()['active']
+		api.update_status("Hi, @" +author + ".\n👑 cases: " + str(cases) +  "\n 💀 deaths: " + str(actualdeaths) + "\n 🏥 active:  " + str(active) + "\n💪 recovered : " + str(recovered) , in_reply_to_status_id = tweetid) 
 			    
 	else: 
 		    api.update_status("Ups! @"+ author +". Sorry! The country does not exist!😯", in_reply_to_status_id = tweetid) 
 	
 	return True
+
+class StdOutListener(StreamListener):
+  
+    def on_status(self, status):
+       print (status.author.screen_name, status.created_at, status.text, status.id)
+       author = status.author.screen_name
+       text = status.text
+       statID = status.id
+       if "info" in text:
+       	end = len(text)
+       	print(end)
+       	text= text[15:end]
+       	print(text)
+       	respondrealtime(statID, author, text)
+       elif "prediction" in text:	
+       	prediction(statID, author, text)
+       return True
+
+    def on_error(self, status):
+        print(status)
+
+
 
 guardapaisosdisponibles()
 busquedainfoprediction()
