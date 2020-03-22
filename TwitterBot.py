@@ -18,13 +18,13 @@ import requests
 
 # Go to http://apps.twitter.com and create an app.
 # The consumer key and secret will be generated for you after
-consumer_key="K6L8pQamwrVrIT1Qacvjtx9yW"
-consumer_secret="ndjXdABlQxlGeyAT7WcBdNcTq7sQzZkTYusJSkWhBBw9hmhYEX"
+consumer_key=""
+consumer_secret=""
 
 # After the step above, you will be redirected to your app's page.
 # Create an access token under the the "Your access token" section
-access_token="1241308792526123009-crprGTXVZuWM2Z3NHwecJQdEnL6dXD"
-access_token_secret="5XYEQz9DzbpRIb9TBg7PHxbK7B9q52yZx4FoBRYBTgz9L"
+access_token=""
+access_token_secret=""
 
 
 	
